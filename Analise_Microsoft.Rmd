@@ -6,13 +6,77 @@ date: "FIAP - Conclusão de Disciplina | 30/11/2016"
 output: ioslides_presentation
 ---
 
+
 ```{r setup, include=FALSE}
+# Esta é uma linha padrão do Rmarkdown
 knitr::opts_chunk$set(echo = FALSE)
 ```
 
-```{r carga}
-msft <- read.csv("http://ichart.finance.yahoo.com/table.csv?s=MSFT", sep=',', header=1)
+```{r libs_e_tema, echo=FALSE, include=FALSE}
+# Carregando as bibliotecas necessárias
+library(latticeExtra, quietly = TRUE)
+library(quantmod, quietly = TRUE)
+
+# Criando uma paleta de cores
+tema <- trellis.par.get()
+cores <- brewer.pal(7, "Blues")
+paleta <- c("#000033", "#000034", "#000035", "#000036", "#000037", "#000038", "#000039", "#00003A", "#00003B", "#00003C", "#00003D", "#00003E", "#00003F", "#000040", "#000041", "#000042", "#000043", "#000044", "#000045", "#000046", "#000047", "#000048", "#000049", "#00004A", "#00004B", "#00004C", "#00004D", "#00004E", "#00004F", "#000050", "#000051", "#000052", "#000053", "#000054", "#000055", "#000056", "#000057", "#000058", "#000059", "#00005A", "#00005B", "#00005C", "#00005D", "#00005E", "#00005F", "#000060", "#000061", "#000062", "#000063", "#000064", "#000065", "#000066", "#000067", "#000068", "#000069", "#00006A", "#00006B", "#00006C", "#00006D", "#00006E", "#00006F", "#000070", "#000071", "#000072", "#000073", "#000074", "#000075", "#000076", "#000077", "#000078", "#000079", "#00007A", "#00007B", "#00007C", "#00007D", "#00007E", "#00007F", "#000080", "#000081", "#000082", "#000083", "#000084", "#000085", "#000086", "#000087", "#000088", "#000089", "#00008A", "#00008B", "#00008C", "#00008D", "#00008E", "#00008F", "#000090", "#000091", "#000092", "#000093", "#000094", "#000095", "#000096", "#000097", "#000098", "#000099", "#00009A", "#00009B", "#00009C", "#00009D", "#00009E", "#00009F", "#0000A0", "#0000A1", "#0000A2", "#0000A3", "#0000A4", "#0000A5", "#0000A6", "#0000A7", "#0000A8", "#0000A9", "#0000AA", "#0000AB", "#0000AC", "#0000AD", "#0000AE", "#0000AF", "#0000B0", "#0000B1", "#0000B2", "#0000B3", "#0000B4", "#0000B5", "#0000B6", "#0000B7", "#0000B8", "#0000B9", "#0000BA", "#0000BB", "#0000BC", "#0000BD", "#0000BE", "#0000BF")
+
+# Definindo as cores do nosso tema azul
+tema$superpose.polygon$col <- cores
+tema$superpose.polygon$border <- "transparent"
+tema$plot.polygon$col <- cores[6]
+tema$plot.polygon$border <- cores[5]
+tema$superpose.symbol$pch <- rep(19, 7)
+tema$superpose.symbol$col <- cores
+tema$superpose.symbol$border <- cores
+tema$superpose.line$col <- cores
+tema$strip.background$col <- cores
+tema$strip.background$alpha <- 0.75
+tema$strip.shingle$col <- cores
+tema$strip.shingle$alpha
+tema$dot.symbol$col <- cores[6]
+tema$dot.symbol$pch <- 18
+tema$dot.symbol$cex <- 0.75
+tema$add.line$col <- cores[6]
+tema$regions$col <- paleta[1:100]
+tema$strip.shingle$col <- cores
+trellis.par.set(tema)
+options(scipen=999) # Disable Sci Numbers
 ```
+
+
+```{r carga}
+# Se o arquivo já existe, não baixa, senão, faz download e depois carrega,
+# convertendo os campos de texto para Data, Float, etc.
+if (file.exists("table.csv") == FALSE) {
+  download.file(url = "http://ichart.finance.yahoo.com/table.csv?s=MSFT", destfile = "table.csv")
+}
+msft <- read.csv("table.csv", sep=',', header=1)
+msft$Date <- as.Date(msft$Date)
+msft$Open <- as.double(msft$Open)
+msft$High <- as.double(msft$High)
+msft$Low  <- as.double(msft$Low)
+msft$Close <- as.double(msft$Close)
+msft$Adj.Close <- as.double(msft$Adj.Close)
+msft$Volume <- as.integer(msft$Volume)
+```
+
+```{r colunas}
+# Cria novas columas, úteis para relatórios
+Ano_Completo <- format(msft$Date, format="%Y")
+msft <- cbind(msft, Ano_Completo)
+Ano <- format(msft$Date, format="%y")
+msft <- cbind(msft, Ano)
+Mes <- format(msft$Date, format="%m")
+msft <- cbind(msft, Mes)
+msft$Ano <- as.integer(msft$Ano)
+msft$Ano_Completo <- as.integer(msft$Ano_Completo)
+msft$Mes <- as.integer(msft$Mes)
+```
+
+
+# A Empresa
 
 
 ## A Microsoft
@@ -45,6 +109,9 @@ Entre seus principais produtos de hardware estão os consoles de videogame Xbox,
 <img src="img/xbox.jpg" width="250" height="150">
 <img src="img/surface.jpg" width="250" height="150">
 <img src="img/lumia.jpg" width="250" height="150">
+
+
+# Mercado Financeiro
 
 
 ## IPO NASDAQ
@@ -81,19 +148,45 @@ que podem ser vistos como mudanças bruscas no preço.
 | 18/02/2003 | 2 por 1 |
 
 
-```{r por_ano, echo=FALSE, results='asis'}
-Ano <- format(as.Date(msft$Date), format="%Y")
-msft <- cbind(msft, Ano)
-Mes <- format(as.Date(msft$Date), format="%m")
-msft <- cbind(msft, Mes)
-library(lattice)
-for (y in (1986:2016)) {
-  cat(paste("## Preço em ", y, " (em US$)"))
-  cat('\n\n')
-  print(barchart(Close ~ Mes | Ano, data=msft[which(msft$Ano == y), ]))
-  cat('\n\n')
-}
+## Valor Ajustado
+
+<br><br><br><br><br>
+Devido aos muitos splits que ocorreram, utilizaremos o valor de 
+**fechamento ajustado** ao invés do simples valor de fechamento.
+
+
+## Histórico de Preços
+
+```{r hist_precos}
+xyplot(Adj.Close ~ Date, data = msft, grid=TRUE,
+       type = "l", lwd = 2)
 ```
+
+## Histórico de Vendas (concentração)
+
+```{r hist_vendas}
+xyplot(Volume ~ Date, data = msft, type=c("p", "smooth"), 
+       col.line = "darkorange", lwd = 3, grid=TRUE)
+```
+
+
+## Histórico de Vendas (volume)
+
+```{r hist_vendas2}
+histogram(Volume ~ Date, data = msft, breaks = 75, type = "count")
+```
+
+
+# Eventos Importantes
+
+## Era Bill Gates
+
+## Era Steve Ballmer
+
+## Era Satya Nadella
+
+
+# ``
 
 
 ## Referências
@@ -104,3 +197,20 @@ for (y in (1986:2016)) {
 - <http://www.nasdaq.com/symbol/msft>
 - <http://money.cnn.com/quote/quote.html?symb=MSFT>
 - <https://www.stocksplithistory.com/microsoft/>
+
+
+## Anexo I - Preço das Ações
+
+```{r por_ano, echo=FALSE, results='asis'}
+# Ano <- format(as.Date(msft$Date), format="%Y")
+# msft <- cbind(msft, Ano)
+# Mes <- format(as.Date(msft$Date), format="%m")
+# msft <- cbind(msft, Mes)
+# for (y in (1986:2016)) {
+#   cat(paste("## Anexo I - Preço em ", y, " (em US$)"))
+#   cat('\n\n')
+#   print(barchart(Close ~ Mes | Ano, data=msft[which(msft$Ano == y), ]))
+#   cat('\n\n')
+# }
+```
+
