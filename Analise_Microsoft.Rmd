@@ -1,11 +1,10 @@
 ---
 title: "Microsoft Corporation"
 subtitle: "Análise da Ação MSFT na Bolsa NASDAQ"
-author: "<strong>Cesar Tomazinho, Eurivalci Duarte e Wesley Silva</strong>"
+author: "<strong>Cesar Tomazinho, Eurivalci Duarte, Fabio Garcia e Wesley Silva</strong>"
 date: "FIAP - Conclusão de Disciplina | 30/11/2016"
 output: ioslides_presentation
 ---
-
 
 ```{r setup, include=FALSE}
 # Esta é uma linha padrão do Rmarkdown
@@ -65,18 +64,20 @@ msft$Volume <- as.integer(msft$Volume)
 ```{r colunas}
 # Cria novas columas, úteis para relatórios
 Ano_Completo <- format(msft$Date, format="%Y")
-msft <- cbind(msft, Ano_Completo)
 Ano <- format(msft$Date, format="%y")
-msft <- cbind(msft, Ano)
 Mes <- format(msft$Date, format="%m")
+msft <- cbind(msft, Ano_Completo)
+msft <- cbind(msft, Ano)
 msft <- cbind(msft, Mes)
-msft$Ano <- as.integer(msft$Ano)
-msft$Ano_Completo <- as.integer(msft$Ano_Completo)
-msft$Mes <- as.integer(msft$Mes)
+msft$Ano_Completo <- as.numeric(as.character(msft$Ano_Completo))
+msft$Ano <- as.numeric(as.character(msft$Ano))
+msft$Mes <- as.numeric(as.character(msft$Mes))
 ```
 
 
+
 # A Empresa
+
 
 
 ## A Microsoft
@@ -91,6 +92,7 @@ presidida por Satya Nadella.
 <img src="img/satya.jpg" width="360" height="200">
 
 
+
 ## Software
 
 Entre seus produtos de software mais conhecidos estão as linhas de sistemas operacionais Windows, a linha de aplicativos para escritório Office e o navegador Internet Explorer. 
@@ -102,6 +104,7 @@ Entre seus produtos de software mais conhecidos estão as linhas de sistemas ope
 <img src="img/ie.jpg" width="250" height="150">
 
 
+
 ## Hardware
 
 Entre seus principais produtos de hardware estão os consoles de videogame Xbox, a série de tablets Surface e os Smartphones Microsoft Lumia, antiga Nokia.<br><br><br><br><br><br>
@@ -111,7 +114,9 @@ Entre seus principais produtos de hardware estão os consoles de videogame Xbox,
 <img src="img/lumia.jpg" width="250" height="150">
 
 
+
 # Mercado Financeiro
+
 
 
 ## IPO NASDAQ
@@ -127,6 +132,7 @@ Entre 1986 e 2016 a empresa fez diversos **splits** no preço das ações,
 que podem ser vistos como mudanças bruscas no preço.
 
 
+
 ## Histórico de Splits (1/2)
 
 | Data       | Taxa    |
@@ -136,6 +142,7 @@ que podem ser vistos como mudanças bruscas no preço.
 | 27/06/1991 | 3 por 2 |
 | 15/06/1992 | 3 por 2 |
 | 23/05/1994 | 2 por 1 |
+
 
 
 ## Histórico de Splits (2/2)
@@ -148,11 +155,13 @@ que podem ser vistos como mudanças bruscas no preço.
 | 18/02/2003 | 2 por 1 |
 
 
+
 ## Valor Ajustado
 
 <br><br><br><br><br>
 Devido aos muitos splits que ocorreram, utilizaremos o valor de 
 **fechamento ajustado** ao invés do simples valor de fechamento.
+
 
 
 ## Histórico de Preços
@@ -162,12 +171,15 @@ xyplot(Adj.Close ~ Date, data = msft, grid=TRUE,
        type = "l", lwd = 2)
 ```
 
+
+
 ## Histórico de Vendas (concentração)
 
 ```{r hist_vendas}
 xyplot(Volume ~ Date, data = msft, type=c("p", "smooth"), 
        col.line = "darkorange", lwd = 3, grid=TRUE)
 ```
+
 
 
 ## Histórico de Vendas (volume)
@@ -177,16 +189,131 @@ histogram(Volume ~ Date, data = msft, breaks = 75, type = "count")
 ```
 
 
+
 # Eventos Importantes
 
-## Era Bill Gates
+
+
+## A Era Bill Gates
+
+Durante muitos anos Bill Gates comandou a empresa com inovação, motivação e visão, 
+mas no meio de 2008 o bilionário decidiu sair da empresa para se dedicar
+às suas causas filantrópicas.
+
+Podemos observar que houve uma ondulação no gráfico de preços, com uma queda
+no preço das ações e uma grande quantidade de vendas na data do anúncio.
+
+
+
+## A Era Bill Gates
+
+```{r gates, echo=FALSE}
+x <- options("getSymbols.warning4.0" = FALSE)
+x <- getSymbols('MSFT')
+x <- chartSeries(MSFT['2008-06::2008-08'], theme = "white")
+x <- addBBands()
+```
+
+
 
 ## Era Steve Ballmer
 
-## Era Satya Nadella
+Gates foi substituído por Balmer em 2000 como CEO, mas continuou a comandar a mesa diretora
+e a dar a visão tecnológica da empresa. Em 2008, entretanto, com a saída de Gates da empresa, Ballmer teve espaço para colocar em prática suas próprias ideias.
+
+Logo após sua entrada foi possível perceber uma queda acentuada no valor das ações e 
+na quantidade de papéis negociados. Houve uma estabilização, mas as notícias 
+demonstraram problemas na compra de outras empresas e com produtos fracassados.
 
 
-# ``
+
+## A Era Steve Ballmer
+
+```{r ballmer}
+x <- chartSeries(MSFT['2008::2013'], theme = "white")
+x <- addBBands()
+```
+
+
+
+## A Era Satya Nadella
+
+Desde que o indiano assumiu como CEO da Microsoft, o preço das ações se projetou em
+uma diagonal ascendente. A empresa retomou o posto entre as marcas mais valiosas,
+e voltou a aparecer em setores de inovação em Cloud, Big Data e Inteligência Artificial.
+
+
+
+## A Era Satya Nadella
+
+```{r nadella}
+x <- chartSeries(MSFT['2013::2016'], theme = "white")
+x <- addBBands()
+```
+
+
+
+## 2016
+
+Este ano foi particularmente bom para a empresa. Avanços nas áreas de Cloud,
+de ferramentas de desenvolvimento, de Big Data e de aquisições fizeram as 
+ações se valorizar consideravelmente.
+
+A postura de Satya Nadella é mais aberta ao open source, colaboração e P&D.
+Com isso, a empresa conseguiu atingir um público diferente do que vinha atingindo.
+
+
+
+## 2016
+
+```{r 2016}
+x <- chartSeries(MSFT['2016'], theme = "white")
+x <- addBBands()
+```
+
+
+
+# Previsões para 2017
+
+
+
+## Previsões para 2017
+
+<br><br><br><br><br>
+Analisando os gráficos com os resultados dos últimos 3 anos, podemos perceber
+uma clara tendência de alta nos preços das ações.
+
+```{r forecast}
+forecast <- fortify.zoo(MSFT['2014::2016', 6])
+names(forecast)[names(forecast)=="Index"] <- "Date"
+names(forecast)[names(forecast)=="MSFT.Adjusted"] <- "Close"
+forecast <- cbind(forecast, seq(1:length(forecast$Date)))
+names(forecast)[3] <- "Id"
+```
+
+
+
+## 2017 - Ajuste de Regressão Polinomial Local
+
+```{r polinom}
+plot(Close ~ Id, forecast, cex = 1.3, col = "#55AAEE")
+y.loess <- loess(Close ~ Id, forecast)
+y.predict <- predict(y.loess, forecast)
+lines(forecast$Id,y.predict, col = "purple", lwd=5)
+```
+
+
+
+## 2017 - Regressão Linear
+
+```{r lm}
+plot(Close ~ Date, data = forecast, 
+     pch = 16, cex = 1.3, col = "#55AAEE", 
+     xlab = "Data", ylab = "Fechamento")
+fit <- lm(Close ~ Date, data = forecast)
+abline(fit, col = "red", lwd = 5)
+```
+
 
 
 ## Referências
@@ -197,20 +324,3 @@ histogram(Volume ~ Date, data = msft, breaks = 75, type = "count")
 - <http://www.nasdaq.com/symbol/msft>
 - <http://money.cnn.com/quote/quote.html?symb=MSFT>
 - <https://www.stocksplithistory.com/microsoft/>
-
-
-## Anexo I - Preço das Ações
-
-```{r por_ano, echo=FALSE, results='asis'}
-# Ano <- format(as.Date(msft$Date), format="%Y")
-# msft <- cbind(msft, Ano)
-# Mes <- format(as.Date(msft$Date), format="%m")
-# msft <- cbind(msft, Mes)
-# for (y in (1986:2016)) {
-#   cat(paste("## Anexo I - Preço em ", y, " (em US$)"))
-#   cat('\n\n')
-#   print(barchart(Close ~ Mes | Ano, data=msft[which(msft$Ano == y), ]))
-#   cat('\n\n')
-# }
-```
-
